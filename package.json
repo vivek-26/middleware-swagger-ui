@@ -2,10 +2,20 @@
   "name": "middleware-swagger-ui",
   "version": "0.0.0-development",
   "description": "Swagger UI as middleware for Koa & Express JS",
-  "keywords": ["swagger", "docs", "koa", "koa2", "express", "swagger-ui", "middleware"],
+  "keywords": [
+    "swagger",
+    "docs",
+    "koa",
+    "koa2",
+    "express",
+    "swagger-ui",
+    "middleware"
+  ],
   "main": "dist/index.js",
   "typings": "dist/types/middleware-swagger-ui.d.ts",
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "author": "Vivek Kumar <vivek.kumar26@live.com>",
   "repository": {
     "type": "git",
@@ -34,7 +44,10 @@
     "commitmsg": "validate-commit-msg"
   },
   "lint-staged": {
-    "{src,test}/**/*.ts": ["prettier --write --single-quote --tab-width 4", "git add"]
+    "{src,test}/**/*.ts": [
+      "prettier --write --single-quote --tab-width 4",
+      "git add"
+    ]
   },
   "config": {
     "commitizen": {
@@ -42,8 +55,7 @@
     },
     "validate-commit-msg": {
       "types": "conventional-commit-types",
-      "helpMessage":
-        "Use \"npm run commit\" instead, we use conventional-changelog format :) (https://github.com/commitizen/cz-cli)"
+      "helpMessage": "Use \"npm run commit\" instead, we use conventional-changelog format :) (https://github.com/commitizen/cz-cli)"
     }
   },
   "jest": {
@@ -51,8 +63,15 @@
       ".(ts|tsx)": "<rootDir>/node_modules/ts-jest/preprocessor.js"
     },
     "testRegex": "(/__tests__/.*|\\.(test|spec))\\.(ts|tsx|js)$",
-    "moduleFileExtensions": ["ts", "tsx", "js"],
-    "coveragePathIgnorePatterns": ["/node_modules/", "/test/"],
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js"
+    ],
+    "coveragePathIgnorePatterns": [
+      "/node_modules/",
+      "/test/"
+    ],
     "coverageThreshold": {
       "global": {
         "branches": 90,
@@ -65,7 +84,9 @@
     "mapCoverage": true
   },
   "devDependencies": {
+    "@types/ejs": "^2.5.0",
     "@types/jest": "^22.0.0",
+    "@types/lodash.defaultsdeep": "^4.6.3",
     "@types/node": "^8.0.0",
     "browserify": "^15.2.0",
     "colors": "^1.1.2",
@@ -96,5 +117,9 @@
     "validate-commit-msg": "^2.12.2",
     "webpack": "^3.10.0",
     "webpack-node-externals": "^1.6.0"
+  },
+  "dependencies": {
+    "ejs": "^2.5.7",
+    "lodash.defaultsdeep": "^4.6.0"
   }
 }
