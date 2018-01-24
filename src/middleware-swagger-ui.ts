@@ -1,4 +1,7 @@
-// Import here Polyfills if needed. Recommended core-js (npm i -D core-js)
-// import "core-js/fn/array.find"
-// ...
-export default class DummyClass {}
+'use strict';
+
+/**
+ * @author Vivek Kumar <vivek.kumar26@live.com>
+ * MIT Licensed
+ */
+export { expressSwaggerUI } from './express-middleware';
