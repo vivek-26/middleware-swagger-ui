@@ -22,11 +22,11 @@ const debug = require('debug')('middleware-swagger-ui:Core');
  */
 export class Core {
     /**
-   * default options for Swagger UI middleware
-   * @private
-   * @type {Object}
-   * @memberof Core
-   */
+     * default options for Swagger UI middleware
+     * @private
+     * @type {Object}
+     * @memberof Core
+     */
     private defaultOptions: any = {
         title: 'Swagger UI',
         oauthOptions: false,
@@ -39,30 +39,31 @@ export class Core {
         routePrefix: '/docs',
         hideTopbar: false
     };
+
     /**
-   * config passed by user
-   * @private
-   * @type {Object}
-   * @memberof Core
-   */
+     * config passed by user
+     * @private
+     * @type {Object}
+     * @memberof Core
+     */
     private config: any;
 
     /**
-   * Creates an instance of Core.
-   * @param {Object} config 
-   * @memberof Core
-   */
+     * Creates an instance of Core.
+     * @param {Object} config
+     * @memberof Core
+     */
     constructor(config: any) {
         this.config = config;
     }
 
     /**
-   * Utility function to build swagger template
-   * @protected
-   * @returns @property {Object} swaggerDistPath - The path to folder where swagger files are present.
-   * @returns @property {Object} indexFile - The filename to be served.
-   * @memberof Core
-   */
+     * Utility function to build swagger template
+     * @protected
+     * @returns @property {Object} swaggerDistPath - The path to folder where swagger files are present.
+     * @returns @property {Object} indexFile - The filename to be served.
+     * @memberof Core
+     */
     protected buildTemplate() {
         const swaggerTemplate = readFileSync(
             join(__dirname, 'template.ejs'),
@@ -84,6 +85,9 @@ export class Core {
         debug('Swagger Dist Folder', swaggerDistPath);
         const indexFile: string = 'template.html';
         writeFileSync(`${swaggerDistPath}/${indexFile}`, renderedTemplate);
-        return { swaggerDistPath, indexFile };
+        return {
+            swaggerDistPath,
+            indexFile
+        };
     }
 }

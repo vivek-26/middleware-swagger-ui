@@ -23,20 +23,20 @@ class ExpressMiddleware extends Core {
     private options: any;
 
     /**
-   * Creates an instance of ExpressMiddleware.
-   * @param {Object} options 
-   * @memberof ExpressMiddleware
-   */
+     * Creates an instance of ExpressMiddleware.
+     * @param {Object} options
+     * @memberof ExpressMiddleware
+     */
     constructor(options: any) {
         super(options);
         this.options = options;
     }
 
     /**
-   * Get swagger path (to serve) & index file name
-   * @returns {Object} data - Object with swagger dist path & index file name
-   * @memberof ExpressMiddleware
-   */
+     * Get swagger path (to serve) & index file name
+     * @returns {Object} data - Object with swagger dist path & index file name
+     * @memberof ExpressMiddleware
+     */
     getSwaggerPathAndIndex() {
         const data = this.buildTemplate();
         return data;
@@ -45,7 +45,7 @@ class ExpressMiddleware extends Core {
 
 /**
  * Middleware function for Express JS
- * @param {Object} options 
+ * @param {Object} options
  * @returns {Function} serveStatic - Express Static Middleware
  */
 export function expressSwaggerUI(options: any): any {
