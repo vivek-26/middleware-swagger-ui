@@ -32,17 +32,9 @@ describe('Express Middleware', () => {
     };
 
     /* Swagger EJS template file path */
-    const templateFile = join(
-        __dirname,
-        '../node_modules/swagger-ui-dist/template.html'
-    );
+    const templateFile = join(__dirname, '../src/public/template.html');
 
-    /* If file exists, delete it! */
     beforeAll(() => {
-        if (existsSync(templateFile)) {
-            unlinkSync(templateFile);
-        }
-
         /* register swagger ui middleware */
         app.use(options.routePrefix, expressSwaggerUI(options));
 
@@ -50,6 +42,9 @@ describe('Express Middleware', () => {
     });
 
     afterAll(() => {
+        /* delete the swagger template file */
+        unlinkSync(templateFile);
+
         /* close the server */
         server.close();
     });

@@ -1,6 +1,7 @@
 var nodeExternals = require('webpack-node-externals');
 var webpack = require('webpack');
 var browserify = require('browserify');
+const copyWebpackPlugin = require('copy-webpack-plugin');
 var path = require('path');
 var fs = require('fs');
 var os = require('os');
@@ -56,6 +57,10 @@ var percentage_handler = function handler(percentage, msg) {
 var webpack_opts = {
   entry: './src/middleware-swagger-ui.ts',
   target: 'node',
+  node: {
+    __dirname: false,
+    __filename: false
+  },
   output: {
     filename: libPath('index.js'),
     libraryTarget: 'commonjs2'
@@ -90,7 +95,9 @@ var webpack_opts = {
         }
       }
     }),
-    new webpack.ProgressPlugin(percentage_handler)
+    new webpack.ProgressPlugin(percentage_handler),
+    new copyWebpackPlugin([{ from: 'src/template.ejs', to: 'dist/template.ejs' }]),
+    new copyWebpackPlugin([{ from: 'src/public', to: 'dist/public' }])
   ]
 };
 
@@ -103,8 +110,7 @@ var create_browser_version = function(inputJs) {
     standalone: LIB_NAME
   });
 
-  b
-    .bundle(function(err, src) {
+  b.bundle(function(err, src) {
       if (err != null) {
         console.error('Browserify error:');
         console.error(err);

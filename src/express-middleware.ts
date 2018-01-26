@@ -49,10 +49,21 @@ class ExpressMiddleware extends Core {
  * @returns {Function} serveStatic - Express Static Middleware
  */
 export function expressSwaggerUI(options: any): any {
-    const expressMiddleware = new ExpressMiddleware(options);
-    const swaggerObj = expressMiddleware.getSwaggerPathAndIndex();
-    debug('serve static params', swaggerObj);
-    return serveStatic(swaggerObj.swaggerDistPath, {
-        index: swaggerObj.indexFile
-    });
+    /* Return the middleware function */
+    return (req: any, res: any, next: any) => {
+        debug('Documentation Endpoint', req.originalUrl);
+        options.routePrefix = req.originalUrl;
+        const expressMiddleware = new ExpressMiddleware(options);
+        const swaggerObj = expressMiddleware.getSwaggerPathAndIndex();
+        debug('serve static params', swaggerObj);
+
+        /**
+         * Call the serve static function with root dir & index,
+         * and then call the function returned by serve static
+         * with (req, res, next);
+         */
+        serveStatic(swaggerObj.swaggerDistPath, {
+            index: swaggerObj.indexFile
+        })(req, res, next);
+    };
 }

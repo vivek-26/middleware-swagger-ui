@@ -11,7 +11,7 @@
 
 import { readFileSync, writeFileSync } from 'fs';
 import { render } from 'ejs';
-import { join } from 'path';
+import { resolve } from 'path';
 import defaultsDeep from 'lodash.defaultsdeep';
 const debug = require('debug')('middleware-swagger-ui:Core');
 
@@ -36,7 +36,6 @@ export class Core {
             layout: 'StandaloneLayout',
             deepLinking: true
         },
-        routePrefix: '/docs',
         hideTopbar: false
     };
 
@@ -66,7 +65,7 @@ export class Core {
      */
     protected buildTemplate() {
         const swaggerTemplate = readFileSync(
-            join(__dirname, 'template.ejs'),
+            resolve(__dirname, 'template.ejs'),
             'utf8'
         );
         const config: any = defaultsDeep(this.config, this.defaultOptions);
@@ -78,10 +77,7 @@ export class Core {
             options: config
         });
 
-        const swaggerDistPath: string = join(
-            __dirname,
-            '../node_modules/swagger-ui-dist'
-        );
+        const swaggerDistPath: string = resolve(__dirname, 'public');
         debug('Swagger Dist Folder', swaggerDistPath);
         const indexFile: string = 'template.html';
         writeFileSync(`${swaggerDistPath}/${indexFile}`, renderedTemplate);
