@@ -29,16 +29,16 @@ describe('Express Middleware', () => {
             layout: 'StandaloneLayout',
             deepLinking: true
         },
-        routePrefix: '/docs/',
         hideTopbar: false
     };
+    const apiDoc = '/docs/';
 
     /* Swagger EJS template file path */
     const templateFile = join(__dirname, '../src/public/template.html');
 
     beforeAll(() => {
         /* register swagger ui middleware */
-        app.use(options.routePrefix, expressSwaggerUI(options));
+        app.use(apiDoc, expressSwaggerUI(options));
 
         server = app.listen(3000);
     });
@@ -55,10 +55,16 @@ describe('Express Middleware', () => {
         expect(typeof expressSwaggerUI).toBe('function');
     });
 
-    test('swagger ui route should return 200', async () => {
-        const res = await request(app).get(options.routePrefix);
+    test('swagger ui route should return index file (template.html)', async () => {
+        const res = await request(app).get(apiDoc);
         expect(res.statusCode).toBe(200);
         expect(res.header['content-type']).toContain('text/html');
+    });
+
+    test('swagger ui route should return other files in public folder', async () => {
+        const res = await request(app).get(`${apiDoc}swagger-ui.css`);
+        expect(res.statusCode).toBe(200);
+        expect(res.header['content-type']).toContain('text/css');
     });
 });
 
@@ -78,19 +84,19 @@ describe('Koa Middleware', () => {
             layout: 'StandaloneLayout',
             deepLinking: true
         },
-        routePrefix: '/api-docs/',
         hideTopbar: false
     };
+    const apiDoc = '/api-docs*';
 
     /* Swagger EJS template file path */
     const templateFile = join(__dirname, '../src/public/template.html');
 
     beforeAll(() => {
         /* register swagger ui middleware */
-        router.get(options.routePrefix, koaSwaggerUI(options));
+        router.get(apiDoc, koaSwaggerUI(options));
         app.use(router.routes()).use(router.allowedMethods());
 
-        server = app.listen(3000);
+        server = app.listen(3001);
     });
 
     afterAll(() => {
@@ -105,9 +111,15 @@ describe('Koa Middleware', () => {
         expect(typeof koaSwaggerUI).toBe('function');
     });
 
-    test('swagger ui route should return 200', async () => {
-        const res = await request(server).get(options.routePrefix);
+    test('swagger ui route should return index file (template.html)', async () => {
+        const res = await request(server).get('/api-docs');
         expect(res.statusCode).toBe(200);
         expect(res.header['content-type']).toContain('text/html');
+    });
+
+    test('swagger ui route should return other files in public folder', async () => {
+        const res = await request(server).get('/api-docs/swagger-ui.css');
+        expect(res.statusCode).toBe(200);
+        expect(res.header['content-type']).toContain('text/css');
     });
 });
