@@ -64,6 +64,7 @@ export class Core {
      * @memberof Core
      */
     protected buildTemplate() {
+        debug('reading swagger template file');
         const swaggerTemplate = readFileSync(
             resolve(__dirname, 'template.ejs'),
             'utf8'
@@ -80,10 +81,26 @@ export class Core {
         const swaggerDistPath: string = resolve(__dirname, 'public');
         debug('Swagger Dist Folder', swaggerDistPath);
         const indexFile: string = 'template.html';
+        debug('writing rendered swagger template file');
         writeFileSync(`${swaggerDistPath}/${indexFile}`, renderedTemplate);
         return {
             swaggerDistPath,
             indexFile
+        };
+    }
+
+    /**
+     * Uitlity function to return path of 'public' folder,
+     * Used when building the template isn't necessary
+     * @protected
+     * @returns @property {Object} swaggerDistPath Path to public folder
+     * @returns @property {Object} indexFile 
+     * @memberof Core
+     */
+    protected getPublicDirPath() {
+        return {
+            swaggerDistPath: resolve(__dirname, 'public'),
+            indexFile: ''
         };
     }
 }

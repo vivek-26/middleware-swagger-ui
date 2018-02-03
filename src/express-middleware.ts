@@ -37,7 +37,13 @@ class ExpressMiddleware extends Core {
      * @returns {Object} data - Object with swagger dist path & index file name
      * @memberof ExpressMiddleware
      */
-    getSwaggerPathAndIndex() {
+    getSwaggerPathAndIndex(reqParams: string) {
+        if (reqParams.slice(-1) !== '/') {
+            debug('index file not requested, do not build template!');
+            return this.getPublicDirPath();
+        }
+
+        debug('index file requested, build the template!');
         const data = this.buildTemplate();
         return data;
     }
@@ -51,10 +57,12 @@ class ExpressMiddleware extends Core {
 export function expressSwaggerUI(options: any): any {
     /* Return the middleware function */
     return (req: any, res: any, next: any) => {
-        debug('Documentation Endpoint', req.originalUrl);
+        debug('req.originalUrl', req.originalUrl);
         options.routePrefix = req.originalUrl;
         const expressMiddleware = new ExpressMiddleware(options);
-        const swaggerObj = expressMiddleware.getSwaggerPathAndIndex();
+        const swaggerObj = expressMiddleware.getSwaggerPathAndIndex(
+            req.originalUrl
+        );
         debug('serve static params', swaggerObj);
 
         /**

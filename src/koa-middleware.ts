@@ -39,7 +39,13 @@ class KoaMiddleware extends Core {
      * @returns {Object} data - Object with swagger dist path & index file name
      * @memberof KoaMiddleware
      */
-    getSwaggerPathAndIndex() {
+    getSwaggerPathAndIndex(reqParams: any) {
+        if (reqParams['0'] !== '') {
+            debug('index file not requested, do not build template!');
+            return this.getPublicDirPath();
+        }
+
+        debug('index file requested, build the template!');
         const data = this.buildTemplate();
         return data;
     }
@@ -60,8 +66,9 @@ export function koaSwaggerUI(options: any): any {
 
         options.routePrefix = normalize(`${ctx.url}//`);
 
+        debug('ctx.params', ctx.params);
         const koaMiddleware = new KoaMiddleware(options);
-        const swaggerObj = koaMiddleware.getSwaggerPathAndIndex();
+        const swaggerObj = koaMiddleware.getSwaggerPathAndIndex(ctx.params);
 
         const file =
             typeof ctx.params === 'object'
