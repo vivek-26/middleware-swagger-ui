@@ -34,17 +34,18 @@ class ExpressMiddleware extends Core {
 
     /**
      * Get swagger path (to serve) & index file name
-     * @returns {Object} data - Object with swagger dist path & index file name
+     * @async
+     * @returns {Promise<Object>} data - Object with swagger dist path & index file name
      * @memberof ExpressMiddleware
      */
-    getSwaggerPathAndIndex(reqParams: string) {
+    async getSwaggerPathAndIndex(reqParams: string) {
         if (reqParams.slice(-1) !== '/') {
             debug('index file not requested, do not build template!');
             return this.getPublicDirPath();
         }
 
         debug('index file requested, build the template!');
-        const data = this.buildTemplate();
+        const data = await this.buildTemplate();
         return data;
     }
 }
@@ -60,18 +61,28 @@ export function expressSwaggerUI(options: any): any {
         debug('req.originalUrl', req.originalUrl);
         options.routePrefix = req.originalUrl;
         const expressMiddleware = new ExpressMiddleware(options);
-        const swaggerObj = expressMiddleware.getSwaggerPathAndIndex(
-            req.originalUrl
-        );
-        debug('serve static params', swaggerObj);
+        expressMiddleware
+            .getSwaggerPathAndIndex(req.originalUrl)
+            .then(swaggerObj => {
+                debug('serve static params', swaggerObj);
 
-        /**
-         * Call the serve static function with root dir & index,
-         * and then call the function returned by serve static
-         * with (req, res, next);
-         */
-        serveStatic(swaggerObj.swaggerDistPath, {
-            index: swaggerObj.indexFile
-        })(req, res, next);
+                /**
+             * Call the serve static function with root dir & index,
+             * and then call the function returned by serve static
+             * with (req, res, next);
+             */
+                serveStatic(swaggerObj.swaggerDistPath, {
+                    index: swaggerObj.indexFile
+                })(req, res, next);
+            })
+            .catch(err => {
+                throw new Error(err.message);
+            });
     };
 }
+
+/* unhandledRejection */
+process.on('unhandledRejection', error => {
+    debug('Unhandled Rejection', error.message);
+    console.error('unhandled rejection:', error);
+});

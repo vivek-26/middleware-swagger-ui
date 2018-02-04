@@ -36,17 +36,18 @@ class KoaMiddleware extends Core {
 
     /**
      * Get swagger path (to serve) & index file name
-     * @returns {Object} data - Object with swagger dist path & index file name
+     * @async
+     * @returns {Promise<Object>} data - Object with swagger dist path & index file name
      * @memberof KoaMiddleware
      */
-    getSwaggerPathAndIndex(reqParams: any) {
+    async getSwaggerPathAndIndex(reqParams: any) {
         if (reqParams['0'] !== '') {
             debug('index file not requested, do not build template!');
             return this.getPublicDirPath();
         }
 
         debug('index file requested, build the template!');
-        const data = this.buildTemplate();
+        const data = await this.buildTemplate();
         return data;
     }
 }
@@ -68,7 +69,9 @@ export function koaSwaggerUI(options: any): any {
 
         debug('ctx.params', ctx.params);
         const koaMiddleware = new KoaMiddleware(options);
-        const swaggerObj = koaMiddleware.getSwaggerPathAndIndex(ctx.params);
+        const swaggerObj = await koaMiddleware.getSwaggerPathAndIndex(
+            ctx.params
+        );
 
         const file =
             typeof ctx.params === 'object'
@@ -89,3 +92,9 @@ export function koaSwaggerUI(options: any): any {
         });
     };
 }
+
+/* unhandledRejection */
+process.on('unhandledRejection', error => {
+    debug('Unhandled Rejection', error.message);
+    console.error('unhandled rejection:', error);
+});

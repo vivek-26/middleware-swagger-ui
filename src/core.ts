@@ -11,8 +11,10 @@
 
 import { readFileSync, writeFileSync } from 'fs';
 import { render } from 'ejs';
-import { resolve } from 'path';
+import { resolve, extname } from 'path';
 import defaultsDeep from 'lodash.defaultsdeep';
+const { resolveRefs } = require('json-refs');
+import { safeLoad } from 'js-yaml';
 const debug = require('debug')('middleware-swagger-ui:Core');
 
 /**
@@ -21,6 +23,38 @@ const debug = require('debug')('middleware-swagger-ui:Core');
  * @class Core
  */
 export class Core {
+    /**
+     * Static object containing methods to reolve refs in yaml & json spec
+     * @private
+     * @static
+     * @type {*}
+     * @memberof Core
+     */
+    private static resolveRefs: any = {
+        yaml: async (specFilePath: string) => {
+            const root: any = safeLoad(readFileSync(specFilePath).toString());
+            const options: any = {
+                filter: ['relative', 'remote'],
+                loaderOptions: {
+                    processContent: function(res: any, callback: any) {
+                        callback(null, safeLoad(res.text));
+                    }
+                }
+            };
+            const result: any = await resolveRefs(root, options);
+            return result.resolved;
+        },
+        json: async (specFilePath: string) => {
+            const fileContents: any = readFileSync(specFilePath, 'utf8');
+            const root: any = JSON.parse(fileContents);
+            const options: any = {
+                filter: ['relative', 'remote']
+            };
+            const result: any = await resolveRefs(root, options);
+            return result.resolved;
+        }
+    };
+
     /**
      * default options for Swagger UI middleware
      * @private
@@ -59,11 +93,12 @@ export class Core {
     /**
      * Utility function to build swagger template
      * @protected
-     * @returns @property {Object} swaggerDistPath - The path to folder where swagger files are present.
-     * @returns @property {Object} indexFile - The filename to be served.
+     * @async
+     * @returns @property {Promise<Object>} swaggerDistPath - The path to folder where swagger files are present.
+     * @returns @property {Promise<Object>} indexFile - The filename to be served.
      * @memberof Core
      */
-    protected buildTemplate() {
+    protected async buildTemplate() {
         debug('reading swagger template file');
         const swaggerTemplate = readFileSync(
             resolve(__dirname, 'template.ejs'),
@@ -71,6 +106,32 @@ export class Core {
         );
         const config: any = defaultsDeep(this.config, this.defaultOptions);
         debug('config', config);
+
+        if (
+            typeof ((config || {}).swaggerOptions || {}).specFile === 'string'
+        ) {
+            debug('specFile found, ignoring url property');
+
+            /* Determine spec file etension */
+            const extn: string = extname(config.swaggerOptions.specFile);
+            debug('specFile extension', extn);
+
+            /* If extension isn't yaml or json, throw an error! */
+            if (!extn.slice(1).match(/^(yaml|json)$/)) {
+                debug('invalid swagger specification file');
+                throw new Error('invalid swagger specification file');
+            }
+
+            /* Swagger specification */
+            const swaggerSpec: any = await Core.resolveRefs[extn.slice(1)](
+                config.swaggerOptions.specFile
+            );
+
+            /* delete specFile and attach it to swaggerOption */
+            delete config.swaggerOptions.specFile;
+            config.swaggerOptions.spec = swaggerSpec;
+            debug('added swagger spec to swagger options');
+        }
 
         const renderedTemplate = render(swaggerTemplate, {
             title: config.title,
