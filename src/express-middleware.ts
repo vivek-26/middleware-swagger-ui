@@ -66,11 +66,7 @@ export function expressSwaggerUI(options: any): any {
             .then(swaggerObj => {
                 debug('serve static params', swaggerObj);
 
-                /**
-             * Call the serve static function with root dir & index,
-             * and then call the function returned by serve static
-             * with (req, res, next);
-             */
+                /* Call the serve static function with root dir & index */
                 serveStatic(swaggerObj.swaggerDistPath, {
                     index: swaggerObj.indexFile
                 })(req, res, next);
