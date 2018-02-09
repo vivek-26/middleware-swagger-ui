@@ -1,7 +1,6 @@
 x-swagger-router-controller: hello_world
 get:
   description: Returns 'Hello' to the caller
-  # used as the method name of the controller
   operationId: hello
   parameters:
     - name: name
@@ -15,9 +14,7 @@ get:
     "200":
       description: Success
       schema:
-        # a pointer to a definition
         $ref: "#/definitions/HelloWorldResponse"
-    # responses may fall through to errors
     default:
       description: Error
       schema:
