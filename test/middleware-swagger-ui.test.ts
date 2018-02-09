@@ -80,6 +80,7 @@ describe('Express Middleware - Spec File', () => {
         swaggerOptions: {
             dom_id: '#swagger-ui',
             url: 'http://petstore.swagger.io/v2/swagger.json',
+            specFile: join(__dirname, './swagger-spec-yaml/index.yaml'),
             layout: 'StandaloneLayout',
             deepLinking: true
         },
@@ -106,6 +107,51 @@ describe('Express Middleware - Spec File', () => {
     });
 
     test('swagger ui route should work with spec file', async () => {
+        const res = await request(app).get(apiDoc);
+        expect(res.statusCode).toBe(200);
+        expect(res.header['content-type']).toContain('text/html');
+    });
+});
+
+/* test express middleware when json spec file is used */
+describe('Express Middleware - JSON Spec File', () => {
+    /* Setup express application */
+    const app = express();
+    let server = null;
+
+    const options = {
+        title: 'Swagger UI',
+        oauthOptions: false,
+        swaggerOptions: {
+            dom_id: '#swagger-ui',
+            url: 'http://petstore.swagger.io/v2/swagger.json',
+            specFile: join(__dirname, './swagger-spec-json/index.json'),
+            layout: 'StandaloneLayout',
+            deepLinking: true
+        },
+        hideTopbar: false
+    };
+    const apiDoc = '/docs/';
+
+    /* Swagger EJS template file path */
+    const templateFile = join(__dirname, '../src/public/template.html');
+
+    beforeAll(() => {
+        /* register swagger ui middleware */
+        app.use(apiDoc, expressSwaggerUI(options));
+
+        server = app.listen(3001);
+    });
+
+    afterAll(() => {
+        /* delete the swagger template file */
+        unlinkSync(templateFile);
+
+        /* close the server */
+        server.close();
+    });
+
+    test('swagger ui route should work with json spec file', async () => {
         const res = await request(app).get(apiDoc);
         expect(res.statusCode).toBe(200);
         expect(res.header['content-type']).toContain('text/html');
@@ -210,6 +256,53 @@ describe('Koa Middleware - Spec File', () => {
     });
 
     test('swagger ui route should work with spec file', async () => {
+        const res = await request(server).get('/api-docs');
+        expect(res.statusCode).toBe(200);
+        expect(res.header['content-type']).toContain('text/html');
+    });
+});
+
+/* test koa middleware when json spec file is used */
+describe('Koa Middleware - JSON Spec File', () => {
+    /* setup koa app */
+    const app = new Koa();
+    const router = new Router();
+    let server = null;
+
+    const options = {
+        title: 'Swagger UI',
+        oauthOptions: false,
+        swaggerOptions: {
+            dom_id: '#swagger-ui',
+            url: 'http://petstore.swagger.io/v2/swagger.json',
+            specFile: join(__dirname, './swagger-spec-json/index.json'),
+            layout: 'StandaloneLayout',
+            deepLinking: true
+        },
+        hideTopbar: false
+    };
+    const apiDoc = '/api-docs*';
+
+    /* Swagger EJS template file path */
+    const templateFile = join(__dirname, '../src/public/template.html');
+
+    beforeAll(() => {
+        /* register swagger ui middleware */
+        router.get(apiDoc, koaSwaggerUI(options));
+        app.use(router.routes()).use(router.allowedMethods());
+
+        server = app.listen(3003);
+    });
+
+    afterAll(() => {
+        /* delete the swagger template file */
+        unlinkSync(templateFile);
+
+        /* close the server */
+        server.close();
+    });
+
+    test('swagger ui route should work with json spec file', async () => {
         const res = await request(server).get('/api-docs');
         expect(res.statusCode).toBe(200);
         expect(res.header['content-type']).toContain('text/html');
