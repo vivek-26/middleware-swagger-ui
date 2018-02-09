@@ -1,0 +1,8 @@
+{
+	"HelloWorldResponse": {
+		"$ref": "./hello-world.json"
+	},
+	"ErrorResponse": {
+		"$ref": "./error-response.json"
+	}
+}
