@@ -78,6 +78,7 @@ export function expressSwaggerUI(options: any): any {
 }
 
 /* unhandledRejection */
+/* istanbul ignore next */
 process.on('unhandledRejection', error => {
     debug('Unhandled Rejection', error.message);
     console.error('unhandled rejection:', error);

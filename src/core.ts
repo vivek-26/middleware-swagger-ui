@@ -36,7 +36,9 @@ export class Core {
             const options: any = {
                 filter: ['relative', 'remote'],
                 loaderOptions: {
+                    /* istanbul ignore next */
                     processContent: function(res: any, callback: any) {
+                        /* istanbul ignore next */
                         callback(null, safeLoad(res.text));
                     }
                 }
@@ -106,7 +108,6 @@ export class Core {
         );
         const config: any = defaultsDeep(this.config, this.defaultOptions);
         debug('config', config);
-
         if (
             typeof ((config || {}).swaggerOptions || {}).specFile === 'string'
         ) {
@@ -117,6 +118,7 @@ export class Core {
             debug('specFile extension', extn);
 
             /* If extension isn't yaml or json, throw an error! */
+            /* istanbul ignore if */
             if (!extn.slice(1).match(/^(yaml|json)$/)) {
                 debug('invalid swagger specification file');
                 throw new Error('invalid swagger specification file');
