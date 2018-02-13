@@ -43,5 +43,31 @@ app.use('/docs', expressSwaggerUI(options));
 * **`swaggerOptions.specFile: `** Read swagger specification from local file (supports both **yaml** and **json**). Works even if `swagger specification is split into multiple files`. Read more [here](http://azimi.me/2015/07/16/split-swagger-into-smaller-files.html). It can resolve `remote` & `local` references (thanks to [whitlockjc](https://github.com/whitlockjc/json-refs)). **`NOTE:`** Using this property overrides **`url`** property.
 * **`hideTopbar: `** Hides swagger top bar
 
+**Koa (v2)** setup:
+```js
+const Koa = require('koa');
+const Router = require('koa-router');
+const { koaSwaggerUI } = require('middleware-swagger-ui');
+const app = new Koa();
+const router = new Router();
+const { join } = require('path');
+
+const options = {
+    title: 'Swagger UI',
+    oauthOptions: false,
+    swaggerOptions: {
+        dom_id: '#swagger-ui',
+        url: 'http://petstore.swagger.io/v2/swagger.json',
+        specFile: join(__dirname, 'path/to/your/swagger/spec'),
+        layout: 'StandaloneLayout',
+        deepLinking: true
+    },
+    hideTopbar: false
+};
+
+router.get('/docs*', koaSwaggerUI(options));
+app.use(router.routes()).use(router.allowedMethods());
+```
+
 ### Upcoming
 * Add more tests.
