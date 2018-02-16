@@ -1,0 +1,22 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "version": "1.0.0",
+    "title": "Swagger UI as Middleware"
+  },
+  "host": "localhost:10010",
+  "basePath": "/",
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "paths": {
+    "$ref": "./swagger-docs/paths/index.json",
+    "/swagger": {
+      "x-swagger-pipe": "swagger_raw"
+    }
+  },
+  "definitions": {
+    "$ref": "./swagger-docs/definitions/index.json"
+  }
+}
