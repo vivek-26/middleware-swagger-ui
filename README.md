@@ -69,5 +69,8 @@ router.get('/docs*', koaSwaggerUI(options));
 app.use(router.routes()).use(router.allowedMethods());
 ```
 
+### Examples
+For more examples, [`click here`](https://github.com/vivek-26/middleware-swagger-ui/tree/master/examples)
+
 ### Upcoming
 * Add more tests.
